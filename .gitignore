@@ -1,0 +1,15 @@
+# Terraform working directory and local state contain provider binaries,
+# resource IDs, and potentially sensitive values.
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Keep shareable examples, but never commit environment-specific inputs.
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
