@@ -6,7 +6,7 @@ This Terraform configuration creates seed, controller, and compute VMs on an exi
 
 Source the project's openrc or select an `OS_CLOUD` entry. The admin supplies an Ansible control host, network, keypair, and security group. The group must permit SSH from the control host and the traffic needed between lab VMs (for example, an ingress rule referencing the same group). Attach it to the control host too if that is how its SSH traffic will match the rule.
 
-For example, after creating `reshamp-infra`, the admin can allow IPv4 traffic between ports in that group with:
+For example, after creating `project sg group`, the admin can allow IPv4 traffic between ports in that group with:
 
 ```sh
 openstack security group rule create \

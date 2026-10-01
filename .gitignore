@@ -1,6 +1,7 @@
 # Terraform working directory and local state contain provider binaries,
 # resource IDs, and potentially sensitive values.
 .terraform/
+.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 crash.log
