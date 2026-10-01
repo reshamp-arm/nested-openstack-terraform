@@ -16,7 +16,7 @@ openstack security group rule create \
   'project sg group'
 ```
 
-Run this only if the rule does not already exist. The control host also needs `reshamp-infra` on its port for its SSH traffic to match this rule.
+Run this only if the rule does not already exist. The control host also needs `project sg group` on its port for its SSH traffic to match this rule.
 
 Three variables have no default:
 
