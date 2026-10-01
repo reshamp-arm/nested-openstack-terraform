@@ -13,3 +13,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Local shell variables, including optional TF_VAR_* overrides.
+.env
+.env.*

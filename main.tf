@@ -12,7 +12,7 @@ terraform {
 # Authentication is read from OS_CLOUD / clouds.yaml (or standard OS_* variables).
 provider "openstack" {}
 
-data "openstack_images_image_v2" "ubuntu" {
+data "openstack_images_image_v2" "host" {
   name        = var.image_name
   most_recent = true
 }
@@ -20,26 +20,7 @@ data "openstack_images_image_v2" "ubuntu" {
 locals {
   cloud_init = <<-CLOUD_CONFIG
     #cloud-config
-    # Lab-only break-glass access. Do not reuse this cloud-init in a
-    # non-disposable environment.
-    disable_root: false
-    ssh_pwauth: true
-    chpasswd:
-      expire: false
-      list: |
-        root:stack
-    write_files:
-      - path: /etc/ssh/sshd_config.d/99-lab-root-password.conf
-        owner: root:root
-        permissions: '0600'
-        content: |
-          PermitRootLogin yes
-          PasswordAuthentication yes
-    runcmd:
-      - [systemctl, restart, ssh.service]
-    #package_update: false
-    #package_upgrade: false
-
+    ssh_pwauth: false
     packages:
       - python3
       - python3-apt
@@ -47,25 +28,29 @@ locals {
       - ca-certificates
       - chrony
       - git
+      - python3-venv
   CLOUD_CONFIG
 
   hosts = merge(
     {
       seed = {
-        name   = "${var.prefix}-seed"
-        flavor = var.seed_flavor
+        name     = "${var.prefix}-seed"
+        flavor   = var.seed_flavor
+        image_id = data.openstack_images_image_v2.host.id
       }
     },
     {
       for number in range(1, var.controller_count + 1) : "controller-${number}" => {
-        name   = format("%s-controller-%02d", var.prefix, number)
-        flavor = var.overcloud_flavor
+        name     = format("%s-controller-%02d", var.prefix, number)
+        flavor   = var.overcloud_flavor
+        image_id = data.openstack_images_image_v2.host.id
       }
     },
     {
       for number in range(1, var.compute_count + 1) : "compute-${number}" => {
-        name   = format("%s-compute-%02d", var.prefix, number)
-        flavor = var.overcloud_flavor
+        name     = format("%s-compute-%02d", var.prefix, number)
+        flavor   = var.overcloud_flavor
+        image_id = data.openstack_images_image_v2.host.id
       }
     },
   )
@@ -96,7 +81,7 @@ resource "openstack_compute_instance_v2" "host" {
   }
 
   block_device {
-    uuid                  = data.openstack_images_image_v2.ubuntu.id
+    uuid                  = each.value.image_id
     source_type           = "image"
     destination_type      = "volume"
     volume_size           = var.root_volume_size_gb

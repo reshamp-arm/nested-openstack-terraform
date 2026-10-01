@@ -7,25 +7,23 @@ variable "prefix" {
 variable "network_id" {
   description = "Routed management network used for all lab hosts."
   type        = string
-  default     = "90c0844c-bfaf-48fd-8689-ff36225cba36"
 }
 
 variable "security_group_id" {
-  description = "Security group shared by the lab hosts and the existing Ansible controller."
+  description = "Existing security group for lab VM ports; the admin manages its SSH and intra-lab rules."
   type        = string
-  default     = "f722cc6b-8608-4524-b515-1a22a32cb708"
 }
 
+# make it arm64 for arm deployment.
 variable "image_name" {
-  description = "Glance image used to boot all ARM64 lab hosts."
+  description = "Glance image used to boot all lab hosts."
   type        = string
-  default     = "ubuntu-noble-24.04-aarch64"
+  default     = "ubuntu-noble-24.04-amd64"
 }
 
 variable "keypair_name" {
   description = "Existing OpenStack keypair authorised for SSH access."
   type        = string
-  default     = "reshamp-key"
 }
 
 variable "seed_flavor" {
@@ -69,7 +67,8 @@ variable "root_volume_size_gb" {
 }
 
 variable "availability_zone" {
-  description = "Nova availability zone for all ARM64 lab hosts."
+  description = "Nova availability zone for all lab hosts. Set null to let Nova schedule them without an explicit zone."
   type        = string
-  default     = "nova:compute-2.novalocal"
+  default     = "nova"
+  nullable    = true
 }
